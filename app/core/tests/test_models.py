@@ -4,6 +4,7 @@
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from core import models
 
 
 class ModelTests(TestCase):
@@ -48,3 +49,30 @@ class ModelTests(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_request(self):
+        """Test Creating a request"""
+
+        mentor = get_user_model().objects.create_user(
+            email="uwamgaleila@example.com",
+            password="P@ss12345",
+            first_name="Gasaro",
+            last_name="Leila",
+            is_mentor=True
+        )
+
+        mentee = get_user_model().objects.create_user(
+            email="leila@example.com",
+            password="password",
+            first_name="Leila",
+            last_name="1",
+            is_mentor=False
+        )
+
+        request = models.Request.objects.create(
+            mentor=mentor,
+            mentee=mentee,
+            question="How to integrate Graphql in Django"
+        )
+
+        self.assertEqual(str(request), request.question)

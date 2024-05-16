@@ -2,6 +2,7 @@
 Database Models
 """
 
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -35,6 +36,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""
+    class Meta:
+        ordering = ['id']
+
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -49,3 +53,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class Request(models.Model):
+    """Mentorship Request Model"""
+    class Meta:
+        ordering = ['id']
+
+    mentor = models.ForeignKey(
+       settings.AUTH_USER_MODEL,
+       related_name='mentor',
+       on_delete=models.CASCADE
+    )
+    mentee = models.ForeignKey(
+       settings.AUTH_USER_MODEL,
+       related_name='mentee',
+       on_delete=models.CASCADE
+    )
+    question = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, default="Pending")
+
+    def __str__(self) -> str:
+        """To string method"""
+        return self.question
