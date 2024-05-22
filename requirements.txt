@@ -4,3 +4,4 @@ flake8>=3.9.2,<3.10
 graphene-django
 django-graphql-auth
 django-graphql-jwt
+django-cors-headers

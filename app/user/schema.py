@@ -10,6 +10,7 @@ from graphql_jwt.refresh_token.shortcuts import create_refresh_token
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_jwt.exceptions import JSONWebTokenError
 from django.contrib.auth import authenticate
+from graphql_jwt import ObtainJSONWebToken
 
 
 class UserType(DjangoObjectType):
@@ -74,19 +75,17 @@ class LoginUser(graphene.Mutation):
 class AuthMutation(graphene.ObjectType):
     """Auth Mutation"""
     register_user = RegisterUser.Field()
-    login_user = LoginUser.Field()
+    token_auth = ObtainJSONWebToken.Field()
 
 
 class ChangeUserToMentor(graphene.Mutation):
     """Change User To Mentor Mutation"""
     success = graphene.Boolean()
 
-    class Arguments:
-        user_id = graphene.ID(required=True)
-
-    def mutate(self, info, user_id):
+    def mutate(root, info, **kwargs):
         try:
-            user = User.objects.get(id=user_id)
+            print("info", info.context.user)
+            user = info.context.user
             user.is_mentor = True
             user.save()
             success = True
