@@ -29,13 +29,12 @@ class CreateRequest(graphene.Mutation):
 
     class Arguments:
         mentorId = graphene.Int(required=True)
-        menteeId = graphene.Int(required=True)
         question = graphene.String(required=True)
 
-    def mutate(self, info, mentorId, menteeId, question):
+    def mutate(self, info, mentorId, question):
         User = get_user_model()
         mentor = User.objects.get(id=mentorId)
-        mentee = User.objects.get(id=menteeId)
+        mentee = info.context.user
         request = Request.objects.create(
             mentor=mentor,
             mentee=mentee,
@@ -79,6 +78,7 @@ class RequestQueries(graphene.ObjectType):
     all_requests = graphene.List(RequestType)
     user_requests = graphene.List(RequestType,
                                   menteeId=graphene.Int(required=True))
+    mentor_requests = graphene.List(RequestType)
 
     def resolve_all_requests(self, info):
         return Request.objects.all()
@@ -87,6 +87,10 @@ class RequestQueries(graphene.ObjectType):
         """Users can view all their mentorship sessions"""
         mentee = User.objects.get(id=menteeId)
         return Request.objects.filter(mentee=mentee)
+
+    def resolve_mentor_requests(self, info):
+        """Mentor can view mentorship requests"""
+        return Request.objects.filter(mentor=info.context.user)
 
 
 class RequestMutations(graphene.ObjectType):
