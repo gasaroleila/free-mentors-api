@@ -5,3 +5,8 @@ graphene-django
 django-graphql-auth
 django-graphql-jwt
 django-cors-headers
+djongo
+mongoengine
+pylint-mongoengine
+pymongo
+psycopg2-binary
